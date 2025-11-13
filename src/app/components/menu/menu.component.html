@@ -1,0 +1,64 @@
+<div class="menu-overlay">
+  <div class="menu-content">
+    <div class="menu-header">
+      <div class="title-container">
+        <h1 class="game-title">Coptic Heritage</h1>
+        <p class="game-subtitle">Journey Through Sacred History</p>
+      </div>
+      <div class="cross-icon">✝</div>
+    </div>
+    
+    <div class="menu-body">
+      <div class="game-description">
+        <p>Explore the rich history of the Coptic Church through an interactive adventure.</p>
+        <p>Visit churches, monasteries, and schools to discover ancient wisdom and traditions.</p>
+      </div>
+      
+      <div class="game-stats" *ngIf="gameStateService.gameState().score > 0">
+        <div class="stat-item">
+          <span class="stat-icon">🎯</span>
+          <div>
+            <div class="stat-label">Current Score</div>
+            <div class="stat-value">{{ gameStateService.gameState().score }}</div>
+          </div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">📍</span>
+          <div>
+            <div class="stat-label">Places Visited</div>
+            <div class="stat-value">{{ gameStateService.gameState().completedPlaces.length }}/6</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls-info">
+        <div class="control-item">
+          <span class="control-icon">⌨️</span>
+          <span>Desktop: Use WASD or Arrow Keys</span>
+        </div>
+        <div class="control-item">
+          <span class="control-icon">📱</span>
+          <span>Mobile: Use Virtual Joystick</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="menu-actions">
+      <button class="menu-btn btn-primary" (click)="onStartGame()">
+        <span class="btn-icon">▶️</span>
+        {{ gameStateService.gameState().score > 0 ? 'Continue Journey' : 'Begin Journey' }}
+      </button>
+      
+      <button class="menu-btn btn-secondary" 
+              (click)="onResetProgress()"
+              *ngIf="gameStateService.gameState().score > 0">
+        <span class="btn-icon">🔄</span>
+        Reset Progress
+      </button>
+    </div>
+    
+    <div class="menu-footer">
+      <p>Made with ❤️ for Coptic Heritage Education</p>
+    </div>
+  </div>
+</div>

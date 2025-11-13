@@ -1,0 +1,12 @@
+<div class="joystick-container">
+  <div class="joystick-base"
+       (touchstart)="onTouchStart($event)"
+       (touchmove)="onTouchMove($event)"
+       (touchend)="onTouchEnd($event)"
+       (mousedown)="onMouseDown($event)">
+    <div class="joystick-stick"
+         [class.active]="isDragging()"
+         [style.transform]="'translate(' + stickX() + 'px, ' + stickY() + 'px)'">
+    </div>
+  </div>
+</div>

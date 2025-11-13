@@ -1,0 +1,28 @@
+import { Component, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { GameStateService } from '../../services/game-state.service';
+
+@Component({
+  selector: 'app-menu',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.scss']
+})
+export class MenuComponent {
+  @Output() startGame = new EventEmitter<void>();
+  @Output() resetGame = new EventEmitter<void>();
+
+  constructor(public gameStateService: GameStateService) {}
+
+  onStartGame(): void {
+    this.startGame.emit();
+  }
+
+  onResetProgress(): void {
+    if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+      this.gameStateService.resetProgress();
+      this.resetGame.emit();
+    }
+  }
+}
