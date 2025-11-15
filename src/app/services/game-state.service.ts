@@ -31,6 +31,11 @@ export class GameStateService {
 
   completePlace(placeId: string): void {
     const state = this.gameState();
+    // Don't track the gate as a completed place
+    if (placeId === 'gate') {
+      return;
+    }
+    
     if (!state.completedPlaces.includes(placeId)) {
       this.gameState.set({
         ...state,
@@ -43,6 +48,10 @@ export class GameStateService {
   }
 
   isPlaceCompleted(placeId: string): boolean {
+    // Gate is never considered "completed" since it's just a starting point
+    if (placeId === 'gate') {
+      return false;
+    }
     return this.gameState().completedPlaces.includes(placeId);
   }
 
@@ -53,7 +62,7 @@ export class GameStateService {
 
   getProgress(): { completed: number; total: number; percentage: number } {
     const state = this.gameState();
-    const total = 6;
+    const total = 5; // Total number of interactive places (excluding gate)
     const completed = state.completedPlaces.length;
     const percentage = Math.round((completed / total) * 100);
     

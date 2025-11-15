@@ -187,6 +187,21 @@
     background: linear-gradient(135deg, #90ee90 0%, #32cd32 100%);
     border: 3px solid #228b22;
   }
+  
+  // Gate is non-interactive - reduce visual emphasis
+  &.place-non-interactive {
+    cursor: default;
+    opacity: 0.7;
+    
+    &:hover {
+      transform: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .place-icon {
+      animation: none;
+    }
+  }
 }
 
 .place-icon {

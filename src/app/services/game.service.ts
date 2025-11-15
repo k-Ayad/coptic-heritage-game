@@ -101,6 +101,11 @@ export class GameService {
     const charCenterY = char.y + char.size / 2;
 
     for (const place of this.places) {
+      // Skip collision detection for the gate - it's only a starting point
+      if (place.type === 'gate') {
+        continue;
+      }
+
       const placeCenterX = place.x + place.width / 2;
       const placeCenterY = place.y + place.height / 2;
       const distance = Math.sqrt(
