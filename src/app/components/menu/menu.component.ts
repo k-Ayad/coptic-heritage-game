@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 
 @Component({
@@ -13,7 +14,10 @@ export class MenuComponent {
   @Output() startGame = new EventEmitter<void>();
   @Output() resetGame = new EventEmitter<void>();
 
-  constructor(public gameStateService: GameStateService) {}
+  constructor(
+    private gameService: GameService,
+    public gameStateService: GameStateService
+  ) {}
 
   onStartGame(): void {
     this.startGame.emit();
@@ -21,7 +25,16 @@ export class MenuComponent {
 
   onResetProgress(): void {
     if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+      // Reset game state (score, completed places)
       this.gameStateService.resetProgress();
+      
+      // Reset mini-game state (completion badges, results)
+      this.gameService.resetMiniGames();
+      
+      // Reset character position to start
+      this.gameService.resetCharacterPosition();
+      
+      // Emit reset event
       this.resetGame.emit();
     }
   }

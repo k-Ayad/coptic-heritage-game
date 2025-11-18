@@ -1,16 +1,17 @@
-import { Component, HostListener, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { JoystickComponent } from '../joystick/joystick.component';
 import { PopupComponent } from '../popup/popup.component';
 import { HudComponent } from '../hud/hud.component';
 import { MenuComponent } from '../menu/menu.component';
+import { HymnsGameComponent } from '../hymns-game/hymns-game.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, JoystickComponent, PopupComponent, HudComponent, MenuComponent],
+  imports: [CommonModule, JoystickComponent, PopupComponent, HudComponent, MenuComponent, HymnsGameComponent],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
@@ -23,6 +24,12 @@ export class GameComponent implements OnInit, OnDestroy {
   cameraX = signal<number>(0);
   cameraY = signal<number>(0);
   showMenu = signal<boolean>(true);
+  
+  // Computed signal to check if mini-game is active
+  isInMiniGame = computed(() => {
+    const miniGameState = this.gameService.miniGameState();
+    return miniGameState.currentGame !== null;
+  });
 
   constructor(
     public gameService: GameService,
@@ -48,7 +55,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    if (this.showMenu()) return;
+    if (this.showMenu() || this.isInMiniGame()) return;
     
     const key = event.key.toLowerCase();
     if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
@@ -65,7 +72,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private startGameLoop(): void {
     const gameLoop = () => {
-      if (!this.showMenu()) {
+      if (!this.showMenu() && !this.isInMiniGame()) {
         this.updateMovement();
         this.updateCamera();
       }
@@ -89,7 +96,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   onJoystickMove(direction: { x: number; y: number }): void {
-    if (this.showMenu()) return;
+    if (this.showMenu() || this.isInMiniGame()) return;
     const dx = direction.x * this.SPEED;
     const dy = direction.y * this.SPEED;
     this.gameService.moveCharacter(dx, dy);
@@ -129,5 +136,9 @@ export class GameComponent implements OnInit, OnDestroy {
 
   isPlaceCompleted(placeId: string): boolean {
     return this.gameStateService.isPlaceCompleted(placeId);
+  }
+
+  hasPassedMiniGame(placeId: string): boolean {
+    return this.gameService.hasPassedMiniGame(placeId);
   }
 }

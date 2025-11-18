@@ -1,95 +1,103 @@
 <div class="game-container">
-  <div class="game-viewport" 
-       [style.transform]="'translate(-' + cameraX() + 'px, -' + cameraY() + 'px)'">
-    
-    <!-- Map Background -->
-    <div class="map">
+  
+  <!-- Mini-Game View -->
+  <app-hymns-game *ngIf="isInMiniGame()"></app-hymns-game>
+  
+  <!-- Map View -->
+  <ng-container *ngIf="!isInMiniGame()">
+    <div class="game-viewport" 
+         [style.transform]="'translate(-' + cameraX() + 'px, -' + cameraY() + 'px)'">
       
-      <!-- Ground Layer -->
-      <div class="ground"></div>
-      
-      <!-- Roads -->
-      <div class="road road-horizontal-1"></div>
-      <div class="road road-horizontal-2"></div>
-      <div class="road road-vertical-1"></div>
-      <div class="road road-vertical-2"></div>
-      <div class="road road-diagonal-1"></div>
-      <div class="road road-diagonal-2"></div>
-      
-      <!-- Decorative Elements -->
-      <div class="decoration tree" style="left: 300px; top: 50px;"></div>
-      <div class="decoration tree" style="left: 450px; top: 150px;"></div>
-      <div class="decoration tree" style="left: 800px; top: 100px;"></div>
-      <div class="decoration tree" style="left: 1100px; top: 250px;"></div>
-      <div class="decoration tree" style="left: 600px; top: 450px;"></div>
-      <div class="decoration tree" style="left: 1000px; top: 700px;"></div>
-      <div class="decoration tree" style="left: 1400px; top: 350px;"></div>
-      <div class="decoration tree" style="left: 1700px; top: 800px;"></div>
-      
-      <div class="decoration bush" style="left: 250px; top: 200px;"></div>
-      <div class="decoration bush" style="left: 550px; top: 100px;"></div>
-      <div class="decoration bush" style="left: 950px; top: 400px;"></div>
-      <div class="decoration bush" style="left: 1200px; top: 650px;"></div>
-      <div class="decoration bush" style="left: 400px; top: 800px;"></div>
-      
-      <!-- Interactive Places -->
-      <div *ngFor="let place of gameService.places" 
-           class="place"
-           [class.place-church]="place.type === 'church'"
-           [class.place-monastery]="place.type === 'monastery'"
-           [class.place-school]="place.type === 'school'"
-           [class.place-gate]="place.type === 'gate'"
-           [class.place-completed]="isPlaceCompleted(place.id)"
-           [class.place-non-interactive]="place.type === 'gate'"
-           [style.left.px]="place.x"
-           [style.top.px]="place.y"
-           [style.width.px]="place.width"
-           [style.height.px]="place.height">
-        <div class="completion-badge" *ngIf="isPlaceCompleted(place.id)">✓</div>
-        <div class="place-icon">
-          <span *ngIf="place.type === 'church'">✝</span>
-          <span *ngIf="place.type === 'monastery'">⛪</span>
-          <span *ngIf="place.type === 'school'">📚</span>
-          <span *ngIf="place.type === 'gate'">🚪</span>
+      <!-- Map Background -->
+      <div class="map">
+        
+        <!-- Ground Layer -->
+        <div class="ground"></div>
+        
+        <!-- Roads -->
+        <div class="road road-horizontal-1"></div>
+        <div class="road road-horizontal-2"></div>
+        <div class="road road-vertical-1"></div>
+        <div class="road road-vertical-2"></div>
+        <div class="road road-diagonal-1"></div>
+        <div class="road road-diagonal-2"></div>
+        
+        <!-- Decorative Elements -->
+        <div class="decoration tree" style="left: 300px; top: 50px;"></div>
+        <div class="decoration tree" style="left: 450px; top: 150px;"></div>
+        <div class="decoration tree" style="left: 800px; top: 100px;"></div>
+        <div class="decoration tree" style="left: 1100px; top: 250px;"></div>
+        <div class="decoration tree" style="left: 600px; top: 450px;"></div>
+        <div class="decoration tree" style="left: 1000px; top: 700px;"></div>
+        <div class="decoration tree" style="left: 1400px; top: 350px;"></div>
+        <div class="decoration tree" style="left: 1700px; top: 800px;"></div>
+        
+        <div class="decoration bush" style="left: 250px; top: 200px;"></div>
+        <div class="decoration bush" style="left: 550px; top: 100px;"></div>
+        <div class="decoration bush" style="left: 950px; top: 400px;"></div>
+        <div class="decoration bush" style="left: 1200px; top: 650px;"></div>
+        <div class="decoration bush" style="left: 400px; top: 800px;"></div>
+        
+        <!-- Interactive Places -->
+        <div *ngFor="let place of gameService.places" 
+             class="place"
+             [class.place-church]="place.type === 'church'"
+             [class.place-monastery]="place.type === 'monastery'"
+             [class.place-school]="place.type === 'school'"
+             [class.place-gate]="place.type === 'gate'"
+             [class.place-completed]="isPlaceCompleted(place.id)"
+             [class.place-non-interactive]="place.type === 'gate'"
+             [style.left.px]="place.x"
+             [style.top.px]="place.y"
+             [style.width.px]="place.width"
+             [style.height.px]="place.height">
+          <div class="completion-badge" *ngIf="hasPassedMiniGame(place.id)">✓</div>
+          <div class="place-icon">
+            <span *ngIf="place.type === 'church'">✝</span>
+            <span *ngIf="place.type === 'monastery'">⛪</span>
+            <span *ngIf="place.type === 'school'">📚</span>
+            <span *ngIf="place.type === 'gate'">🚪</span>
+          </div>
+          <div class="place-label">{{ place.name }}</div>
         </div>
-        <div class="place-label">{{ place.name }}</div>
-      </div>
-      
-      <!-- Character -->
-      <div class="character" 
-           [style.left.px]="gameService.character().x"
-           [style.top.px]="gameService.character().y"
-           [style.width.px]="gameService.character().size"
-           [style.height.px]="gameService.character().size">
-        <div class="character-sprite">👤</div>
+        
+        <!-- Character -->
+        <div class="character" 
+             [style.left.px]="gameService.character().x"
+             [style.top.px]="gameService.character().y"
+             [style.width.px]="gameService.character().size"
+             [style.height.px]="gameService.character().size">
+          <div class="character-sprite">👤</div>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- HUD -->
-  <app-hud *ngIf="!showMenu()"></app-hud>
-  
-  <!-- Mobile Joystick -->
-  <app-joystick 
-    *ngIf="isMobile() && !showMenu()"
-    (move)="onJoystickMove($event)">
-  </app-joystick>
-  
-  <!-- Popup -->
-  <app-popup 
-    *ngIf="gameService.showPopup() && !showMenu()"
-    [place]="gameService.activePlace()">
-  </app-popup>
-  
-  <!-- Instructions -->
-  <div class="instructions" *ngIf="!isMobile() && !showMenu()">
-    <p>Use WASD or Arrow Keys to move</p>
-  </div>
-  
-  <!-- Menu -->
-  <app-menu 
-    *ngIf="showMenu()"
-    (startGame)="onStartGame()"
-    (resetGame)="onResetGame()">
-  </app-menu>
+    
+    <!-- HUD -->
+    <app-hud *ngIf="!showMenu()"></app-hud>
+    
+    <!-- Mobile Joystick -->
+    <app-joystick 
+      *ngIf="isMobile() && !showMenu()"
+      (move)="onJoystickMove($event)">
+    </app-joystick>
+    
+    <!-- Popup -->
+    <app-popup 
+      *ngIf="gameService.showPopup() && !showMenu()"
+      [place]="gameService.activePlace()">
+    </app-popup>
+    
+    <!-- Instructions -->
+    <div class="instructions" *ngIf="!isMobile() && !showMenu()">
+      <p>Use WASD or Arrow Keys to move</p>
+    </div>
+    
+    <!-- Menu -->
+    <app-menu 
+      *ngIf="showMenu()"
+      (startGame)="onStartGame()"
+      (resetGame)="onResetGame()">
+    </app-menu>
+  </ng-container>
+
 </div>

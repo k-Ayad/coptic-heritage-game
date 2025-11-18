@@ -1,8 +1,8 @@
 <div class="popup-overlay" (click)="onNo()">
   <div class="popup-content" (click)="$event.stopPropagation()" *ngIf="place">
-    <div class="completion-banner" *ngIf="isCompleted()">
+    <div class="completion-banner" *ngIf="hasPassedMiniGame()">
       <span class="banner-icon">✓</span>
-      <span>Already Visited</span>
+      <span>Completed</span>
     </div>
     
     <div class="popup-header">
@@ -18,14 +18,12 @@
         <span *ngIf="place.type === 'gate'">🚪</span>
       </div>
       <p>{{ place.description }}</p>
-      <p class="popup-question">
-        {{ isCompleted() ? 'Would you like to revisit this experience?' : 'Would you like to start this Coptic heritage experience?' }}
-      </p>
+      <p class="popup-question">{{ getPopupMessage() }}</p>
     </div>
     
     <div class="popup-actions">
       <button class="btn btn-yes" (click)="onYes()">
-        {{ isCompleted() ? 'Revisit' : 'Yes, Let\'s Begin!' }}
+        {{ getButtonText() }}
       </button>
       <button class="btn btn-no" (click)="onNo()">Not Now</button>
     </div>

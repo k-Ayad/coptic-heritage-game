@@ -1,0 +1,111 @@
+<div class="hymns-game-container">
+  
+  <!-- Playing State -->
+  <div class="game-content" *ngIf="gameState() === 'playing'">
+    
+    <!-- Header -->
+    <div class="game-header">
+      <h1 class="game-title">
+        <span class="cross-icon">✝</span>
+        Orthodox Liturgical Hymns Quiz
+      </h1>
+      <div class="progress-info">
+        <span class="progress-text">Hymn {{ currentQuestionIndex() + 1 }} of {{ questions.length }}</span>
+        <div class="progress-bar">
+          <div class="progress-fill" 
+               [style.width.%]="((currentQuestionIndex() + 1) / questions.length) * 100">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score Display -->
+    <div class="score-display">
+      <div class="score-item correct">
+        <span class="score-icon">✓</span>
+        <span class="score-value">{{ correctAnswers() }}</span>
+      </div>
+      <div class="score-item wrong">
+        <span class="score-icon">✗</span>
+        <span class="score-value">{{ wrongAnswers() }}</span>
+      </div>
+    </div>
+
+    <!-- Audio Player -->
+    <div class="audio-section">
+      <div class="audio-instruction">
+        <p>Listen to the hymn and select its correct name:</p>
+      </div>
+      <button class="play-button" 
+              (click)="playHymn()"
+              [class.playing]="isPlaying()"
+              [disabled]="hasAnswered()">
+        <span class="play-icon" *ngIf="!isPlaying()">▶️</span>
+        <span class="play-icon pulse" *ngIf="isPlaying()">🔊</span>
+        <span class="play-text">{{ isPlaying() ? 'Playing...' : 'Play Hymn' }}</span>
+      </button>
+    </div>
+
+    <!-- Answer Options -->
+    <div class="options-section">
+      <button *ngFor="let option of getCurrentQuestion().options"
+              class="option-button"
+              [class.selected]="selectedAnswer() === option"
+              [class.correct]="hasAnswered() && isCorrectAnswer(option)"
+              [class.wrong]="hasAnswered() && selectedAnswer() === option && !isCorrectAnswer(option)"
+              [disabled]="hasAnswered()"
+              (click)="selectAnswer(option)">
+        <span class="option-text">{{ option }}</span>
+        <span class="feedback-icon" *ngIf="hasAnswered() && isCorrectAnswer(option)">✓</span>
+        <span class="feedback-icon" *ngIf="hasAnswered() && selectedAnswer() === option && !isCorrectAnswer(option)">✗</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Result State -->
+  <div class="result-content" *ngIf="gameState() === 'result'">
+    <div class="result-card">
+      <div class="result-icon" [class.passed]="isPassed()" [class.failed]="!isPassed()">
+        <span *ngIf="isPassed()">🎉</span>
+        <span *ngIf="!isPassed()">📖</span>
+      </div>
+      
+      <h2 class="result-title" *ngIf="isPassed()">Congratulations!</h2>
+      <h2 class="result-title" *ngIf="!isPassed()">Keep Learning</h2>
+      
+      <p class="result-message" *ngIf="isPassed()">
+        You have successfully completed the Orthodox Liturgical Hymns Quiz!
+      </p>
+      <p class="result-message" *ngIf="!isPassed()">
+        You need more practice. Visit St. Mark's Church again to retry the quiz.
+      </p>
+
+      <div class="final-score">
+        <div class="score-breakdown">
+          <div class="score-row">
+            <span class="label">Correct Answers:</span>
+            <span class="value correct-color">{{ correctAnswers() }}</span>
+          </div>
+          <div class="score-row">
+            <span class="label">Wrong Answers:</span>
+            <span class="value wrong-color">{{ wrongAnswers() }}</span>
+          </div>
+          <div class="score-row total">
+            <span class="label">Total Score:</span>
+            <span class="value">{{ correctAnswers() }} / {{ questions.length }}</span>
+          </div>
+        </div>
+        
+        <div class="pass-requirement" *ngIf="!isPassed()">
+          <p>You need at least 3 correct answers to pass.</p>
+        </div>
+      </div>
+
+      <button class="back-button" (click)="backToMap()">
+        <span class="button-icon">🗺️</span>
+        Back to Map
+      </button>
+    </div>
+  </div>
+
+</div>

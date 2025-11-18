@@ -56,7 +56,13 @@ export class GameStateService {
   }
 
   resetProgress(): void {
-    this.gameState.set({ ...DEFAULT_GAME_STATE });
+    // Create a fresh state
+    const freshState = { ...DEFAULT_GAME_STATE };
+    
+    // Update the signal
+    this.gameState.set(freshState);
+    
+    // Save to localStorage
     this.saveGameState();
   }
 
