@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
@@ -23,13 +23,19 @@ export class HymnsGameComponent implements OnInit, OnDestroy {
   isPlaying = signal<boolean>(false);
   hasAnswered = signal<boolean>(false);
 
+  // Check if mini-game has actually started (after entry popup)
+  canPlay = computed(() => this.gameService.miniGameStarted());
+
   constructor(
     private gameService: GameService,
     private gameStateService: GameStateService
   ) {}
 
   ngOnInit(): void {
-    this.loadCurrentQuestion();
+    // Only load question if game has started
+    if (this.canPlay()) {
+      this.loadCurrentQuestion();
+    }
   }
 
   ngOnDestroy(): void {
@@ -97,7 +103,6 @@ export class HymnsGameComponent implements OnInit, OnDestroy {
       this.wrongAnswers.set(this.wrongAnswers() + 1);
     }
 
-    // Auto-advance after 1.5 seconds
     setTimeout(() => {
       this.nextQuestion();
     }, 1500);
@@ -134,12 +139,22 @@ export class HymnsGameComponent implements OnInit, OnDestroy {
       if (passed) {
         this.gameStateService.completePlace(place.id);
       }
+
+      // Show completion popup
+      this.gameService.showMiniGameCompletionPopup(passed);
     }
   }
 
   backToMap(): void {
     this.stopAudio();
     this.gameService.exitMiniGame();
+  }
+
+  exitGame(): void {
+    if (confirm('Are you sure you want to exit? Your current progress will be lost.')) {
+      this.stopAudio();
+      this.gameService.exitMiniGame();
+    }
   }
 
   isCorrectAnswer(answer: string): boolean {

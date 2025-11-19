@@ -1,7 +1,10 @@
 <div class="game-container">
   
   <!-- Mini-Game View -->
-  <app-hymns-game *ngIf="isInMiniGame()"></app-hymns-game>
+  <ng-container *ngIf="isInMiniGame()">
+    <app-hymns-game></app-hymns-game>
+    <app-game-popup></app-game-popup>
+  </ng-container>
   
   <!-- Map View -->
   <ng-container *ngIf="!isInMiniGame()">

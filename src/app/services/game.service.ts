@@ -2,6 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import { Place } from '../models/place.model';
 import { Character } from '../models/character.model';
 import { MiniGameState, MiniGameResult, DEFAULT_MINIGAME_STATE } from '../models/minigame-state.model';
+import { GamePopupData, DEFAULT_POPUP_DATA, GamePopupType } from '../models/game-popup.model';
+import { MINIGAME_INFO } from '../models/minigame-info.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +22,9 @@ export class GameService {
   activePlace = signal<Place | null>(null);
   showPopup = signal<boolean>(false);
   miniGameState = signal<MiniGameState>(this.loadMiniGameState());
+  gamePopupData = signal<GamePopupData>({ ...DEFAULT_POPUP_DATA });
+  showGamePopup = signal<boolean>(false);
+  miniGameStarted = signal<boolean>(false);
 
   places: Place[] = [
     {
@@ -141,10 +146,52 @@ export class GameService {
       resumePosition: { x: char.x, y: char.y }
     });
     this.saveMiniGameState();
+
+    // Show entry popup
+    this.showMiniGameEntryPopup(place.id);
+  }
+
+  showMiniGameEntryPopup(placeId: string): void {
+    const info = MINIGAME_INFO[placeId];
+    if (!info) return;
+
+    this.gamePopupData.set({
+      type: 'entry',
+      title: info.name,
+      message: info.description,
+      details: `${info.instructions}\n\nScoring: ${info.scoringSystem}`,
+      showStartButton: true,
+      showCloseButton: false
+    });
+    this.showGamePopup.set(true);
+    this.miniGameStarted.set(false);
+  }
+
+  showMiniGameCompletionPopup(passed: boolean): void {
+    this.gamePopupData.set({
+      type: 'completion',
+      title: passed ? 'Congratulations!' : 'Hard Luck!',
+      message: passed 
+        ? '🎉 Congratulations! You have successfully completed the game.'
+        : '😢 Hard luck! You can try again later.',
+      passed: passed,
+      showStartButton: false,
+      showCloseButton: true
+    });
+    this.showGamePopup.set(true);
+  }
+
+  startMiniGamePlay(): void {
+    this.showGamePopup.set(false);
+    this.miniGameStarted.set(true);
+  }
+
+  closeGamePopup(): void {
+    this.showGamePopup.set(false);
+    this.gamePopupData.set({ ...DEFAULT_POPUP_DATA });
   }
 
   hasMiniGame(placeId: string): boolean {
-    // Currently only St. Mark's Church has a mini-game
     return placeId === 'church1';
   }
 
@@ -163,11 +210,9 @@ export class GameService {
     
     let newResults: MiniGameResult[];
     if (existingIndex >= 0) {
-      // Update existing result
       newResults = [...state.results];
       newResults[existingIndex] = result;
     } else {
-      // Add new result
       newResults = [...state.results, result];
     }
 
@@ -182,7 +227,6 @@ export class GameService {
   exitMiniGame(): void {
     const state = this.miniGameState();
     
-    // Restore character position if saved
     if (state.resumePosition) {
       const char = this.character();
       this.character.set({
@@ -198,21 +242,18 @@ export class GameService {
       resumePosition: null
     });
     this.saveMiniGameState();
+    this.miniGameStarted.set(false);
+    this.showGamePopup.set(false);
+    this.gamePopupData.set({ ...DEFAULT_POPUP_DATA });
   }
 
   resetMiniGames(): void {
-    // Create a fresh mini-game state
     const freshState = { ...DEFAULT_MINIGAME_STATE };
-    
-    // Update the signal
     this.miniGameState.set(freshState);
-    
-    // Save to localStorage
     this.saveMiniGameState();
   }
 
   resetCharacterPosition(): void {
-    // Reset character to starting position
     const char = this.character();
     this.character.set({
       ...char,

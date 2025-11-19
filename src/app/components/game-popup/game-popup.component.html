@@ -1,0 +1,53 @@
+<div class="game-popup-overlay" *ngIf="gameService.showGamePopup()">
+  <div class="game-popup-content">
+    
+    <!-- Entry Popup -->
+    <div class="popup-card" *ngIf="gameService.gamePopupData().type === 'entry'">
+      <div class="popup-header entry-header">
+        <div class="popup-icon">🎮</div>
+        <h2 class="popup-title">{{ gameService.gamePopupData().title }}</h2>
+      </div>
+      
+      <div class="popup-body">
+        <p class="popup-message">{{ gameService.gamePopupData().message }}</p>
+        
+        <div class="popup-details" *ngIf="gameService.gamePopupData().details">
+          <div class="details-section" *ngFor="let detail of gameService.gamePopupData().details?.split('\n\n')">
+            <p>{{ detail }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="popup-actions">
+        <button class="btn btn-start" (click)="onStart()">
+          <span class="btn-icon">▶️</span>
+          Start Mini-Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Completion Popup -->
+    <div class="popup-card" *ngIf="gameService.gamePopupData().type === 'completion'">
+      <div class="popup-header" 
+           [class.success-header]="gameService.gamePopupData().passed"
+           [class.failure-header]="!gameService.gamePopupData().passed">
+        <div class="popup-icon large">
+          {{ gameService.gamePopupData().passed ? '🎉' : '😢' }}
+        </div>
+        <h2 class="popup-title">{{ gameService.gamePopupData().title }}</h2>
+      </div>
+      
+      <div class="popup-body">
+        <p class="popup-message centered">{{ gameService.gamePopupData().message }}</p>
+      </div>
+      
+      <div class="popup-actions">
+        <button class="btn btn-close" (click)="onClose()">
+          <span class="btn-icon">✓</span>
+          Continue
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

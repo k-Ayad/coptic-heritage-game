@@ -5,13 +5,22 @@ import { PopupComponent } from '../popup/popup.component';
 import { HudComponent } from '../hud/hud.component';
 import { MenuComponent } from '../menu/menu.component';
 import { HymnsGameComponent } from '../hymns-game/hymns-game.component';
+import { GamePopupComponent } from '../game-popup/game-popup.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule, JoystickComponent, PopupComponent, HudComponent, MenuComponent, HymnsGameComponent],
+  imports: [
+    CommonModule, 
+    JoystickComponent, 
+    PopupComponent, 
+    HudComponent, 
+    MenuComponent, 
+    HymnsGameComponent,
+    GamePopupComponent
+  ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
@@ -25,7 +34,6 @@ export class GameComponent implements OnInit, OnDestroy {
   cameraY = signal<number>(0);
   showMenu = signal<boolean>(true);
   
-  // Computed signal to check if mini-game is active
   isInMiniGame = computed(() => {
     const miniGameState = this.gameService.miniGameState();
     return miniGameState.currentGame !== null;
