@@ -5,6 +5,7 @@ import { PopupComponent } from '../popup/popup.component';
 import { HudComponent } from '../hud/hud.component';
 import { MenuComponent } from '../menu/menu.component';
 import { HymnsGameComponent } from '../hymns-game/hymns-game.component';
+import { IconPuzzleGameComponent } from '../icon-puzzle-game/icon-puzzle-game.component';
 import { GamePopupComponent } from '../game-popup/game-popup.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
@@ -19,6 +20,7 @@ import { GameStateService } from '../../services/game-state.service';
     HudComponent, 
     MenuComponent, 
     HymnsGameComponent,
+    IconPuzzleGameComponent,
     GamePopupComponent
   ],
   templateUrl: './game.component.html',
@@ -37,6 +39,11 @@ export class GameComponent implements OnInit, OnDestroy {
   isInMiniGame = computed(() => {
     const miniGameState = this.gameService.miniGameState();
     return miniGameState.currentGame !== null;
+  });
+
+  currentMiniGame = computed(() => {
+    const miniGameState = this.gameService.miniGameState();
+    return miniGameState.currentGame;
   });
 
   constructor(

@@ -2,7 +2,13 @@
   
   <!-- Mini-Game View -->
   <ng-container *ngIf="isInMiniGame()">
-    <app-hymns-game></app-hymns-game>
+    <!-- Hymns Game (St. Mark's Church) -->
+    <app-hymns-game *ngIf="currentMiniGame() === 'church1'"></app-hymns-game>
+    
+    <!-- Icon Puzzle Game (Catechetical School) -->
+    <app-icon-puzzle-game *ngIf="currentMiniGame() === 'school1'"></app-icon-puzzle-game>
+    
+    <!-- Game Popup (shared) -->
     <app-game-popup></app-game-popup>
   </ng-container>
   

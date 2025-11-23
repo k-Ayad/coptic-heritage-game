@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Place } from '../models/place.model';
 import { Character } from '../models/character.model';
 import { MiniGameState, MiniGameResult, DEFAULT_MINIGAME_STATE } from '../models/minigame-state.model';
-import { GamePopupData, DEFAULT_POPUP_DATA, GamePopupType } from '../models/game-popup.model';
+import { GamePopupData, DEFAULT_POPUP_DATA } from '../models/game-popup.model';
 import { MINIGAME_INFO } from '../models/minigame-info.model';
 
 @Injectable({
@@ -89,6 +89,31 @@ export class GameService {
     }
   ];
 
+  constructor() {
+    // Handle page refresh while in mini-game
+    this.handleRefresh();
+  }
+
+  private handleRefresh(): void {
+    const state = this.miniGameState();
+    
+    // If we were in a mini-game when page refreshed
+    if (state.currentGame) {
+      // Find the place
+      const place = this.places.find(p => p.id === state.currentGame);
+      
+      if (place) {
+        // Set active place
+        this.activePlace.set(place);
+        
+        // Show entry popup again
+        setTimeout(() => {
+          this.showMiniGameEntryPopup(state.currentGame!);
+        }, 100);
+      }
+    }
+  }
+
   moveCharacter(dx: number, dy: number): void {
     const char = this.character();
     const newX = Math.max(0, Math.min(this.MAP_WIDTH - char.size, char.x + dx));
@@ -137,7 +162,6 @@ export class GameService {
   startMiniGame(place: Place): void {
     this.showPopup.set(false);
     
-    // Save current position for resume
     const char = this.character();
     const state = this.miniGameState();
     this.miniGameState.set({
@@ -147,7 +171,6 @@ export class GameService {
     });
     this.saveMiniGameState();
 
-    // Show entry popup
     this.showMiniGameEntryPopup(place.id);
   }
 
@@ -192,7 +215,7 @@ export class GameService {
   }
 
   hasMiniGame(placeId: string): boolean {
-    return placeId === 'church1';
+    return placeId === 'church1' || placeId === 'school1';
   }
 
   getMiniGameResult(placeId: string): MiniGameResult | undefined {
@@ -251,6 +274,13 @@ export class GameService {
     const freshState = { ...DEFAULT_MINIGAME_STATE };
     this.miniGameState.set(freshState);
     this.saveMiniGameState();
+    
+    // Also clear icon puzzle progress
+    try {
+      localStorage.removeItem('icon_puzzle_completed');
+    } catch (error) {
+      console.error('Failed to clear icon puzzle progress:', error);
+    }
   }
 
   resetCharacterPosition(): void {

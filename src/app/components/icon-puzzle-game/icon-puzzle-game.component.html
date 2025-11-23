@@ -1,0 +1,127 @@
+<div class="icon-puzzle-container">
+  
+  <!-- Exit Button -->
+  <button class="exit-button" (click)="exitGame()" *ngIf="canPlay() && gameState() === 'playing'">
+    <span class="exit-icon">✕</span>
+    <span class="exit-text">Exit</span>
+  </button>
+  
+  <!-- Playing State -->
+  <div class="game-content" *ngIf="gameState() === 'playing' && canPlay()">
+    
+    <!-- Header -->
+    <div class="game-header">
+      <h1 class="game-title">
+        <span class="icon-symbol">🖼️</span>
+        {{ currentIconConfig()?.title || 'Rebuild the Icon' }}
+      </h1>
+      <div class="game-info">
+        <p class="instruction-text">Drag and drop the pieces to restore the icon</p>
+        <div class="info-row">
+          <div class="moves-counter">
+            <span class="moves-label">Moves:</span>
+            <span class="moves-value">{{ moves() }}</span>
+          </div>
+          <div class="progress-badge" [class.requirement-met]="hasMetRequirement()">
+            <span class="progress-text">{{ getRequirementText() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Puzzle Board -->
+    <div class="puzzle-section">
+      <div class="puzzle-board" #puzzleBoard>
+        <div *ngFor="let tile of tiles()"
+             class="puzzle-tile"
+             [class.dragging]="tile.isDragging"
+             [ngStyle]="getTileStyle(tile)"
+             (pointerdown)="onPointerDown($event, tile)"
+             [attr.data-tile-id]="tile.id">
+          <div class="drag-indicator" *ngIf="!tile.isDragging">
+            <span class="drag-icon">⋮⋮</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="puzzle-hint">
+        <p>💡 Tip: Drag tiles to swap their positions</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <button class="action-button reset-button" (click)="resetPuzzle()">
+        <span class="btn-icon">🔄</span>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Icon Description Popup (After Solving Each Puzzle) -->
+  <div class="description-popup-overlay" *ngIf="showIconDescriptionPopup()">
+    <div class="description-popup-content">
+      <div class="description-card">
+        
+        <!-- Success Icon -->
+        <div class="success-icon">🎉</div>
+        
+        <!-- Title -->
+        <h2 class="popup-title">Puzzle Solved!</h2>
+        
+        <!-- Full Icon Image -->
+        <div class="icon-display">
+          <img [src]="getCurrentIconImageUrl()" 
+               [alt]="currentIconConfig()?.title"
+               class="full-icon-image">
+        </div>
+        
+        <!-- Icon Title -->
+        <h3 class="icon-title">{{ currentIconConfig()?.title }}</h3>
+        
+        <!-- Icon Story/Description -->
+        <div class="icon-description">
+          <p>{{ currentIconConfig()?.story }}</p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="puzzle-stats">
+          <div class="stat-row">
+            <span class="stat-label">Moves Used:</span>
+            <span class="stat-value">{{ moves() }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Progress:</span>
+            <span class="stat-value">{{ getProgressText() }}</span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="popup-actions">
+          <!-- Show Next Puzzle if more available -->
+          <button class="popup-btn next-puzzle-btn" 
+                  (click)="nextPuzzle()"
+                  *ngIf="hasMorePuzzles()">
+            <span class="btn-icon">⏭️</span>
+            Next Puzzle
+          </button>
+          
+          <!-- Show Finish if requirement met -->
+          <button class="popup-btn finish-btn" 
+                  (click)="finishMiniGame()"
+                  *ngIf="hasMetRequirement()">
+            <span class="btn-icon">🗺️</span>
+            {{ hasMorePuzzles() ? 'Continue to Map' : 'Complete & Return to Map' }}
+          </button>
+        </div>
+        
+        <!-- Requirement Notice -->
+        <div class="requirement-notice" *ngIf="!hasMetRequirement()">
+          <p>⚠️ Complete {{ REQUIRED_PUZZLES - completedIconIds().length }} more puzzle(s) to finish this mini-game</p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+</div>
