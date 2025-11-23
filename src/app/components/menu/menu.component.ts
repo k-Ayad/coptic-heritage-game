@@ -38,4 +38,25 @@ export class MenuComponent {
       this.resetGame.emit();
     }
   }
+
+  // Check if any progress exists (score OR icon puzzles solved)
+  hasAnyProgress(): boolean {
+    // Check score
+    if (this.gameStateService.gameState().score > 0) {
+      return true;
+    }
+
+    // Check if any icon puzzle has been solved
+    try {
+      const iconPuzzleProgress = localStorage.getItem('icon_puzzle_completed');
+      if (iconPuzzleProgress) {
+        const completed = JSON.parse(iconPuzzleProgress);
+        return Array.isArray(completed) && completed.length > 0;
+      }
+    } catch (error) {
+      console.error('Error checking icon puzzle progress:', error);
+    }
+
+    return false;
+  }
 }

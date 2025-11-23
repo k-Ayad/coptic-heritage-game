@@ -51,7 +51,7 @@
       
       <button class="menu-btn btn-secondary" 
               (click)="onResetProgress()"
-              *ngIf="gameStateService.gameState().score > 0">
+              *ngIf="hasAnyProgress()">
         <span class="btn-icon">🔄</span>
         Reset Progress
       </button>
