@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 import { LITURGICAL_ITEMS, LiturgicalItem } from '../../models/liturgical-items';
+import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-find-liturgical-item-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule , ConfirmationDialogComponent],
   templateUrl: './find-liturgical-item-game.component.html',
   styleUrls: ['./find-liturgical-item-game.component.scss']
 })
@@ -27,7 +29,8 @@ export class FindLiturgicalItemGameComponent implements OnInit, OnDestroy {
 
   constructor(
     public gameService: GameService,
-    private gameStateService: GameStateService
+    private gameStateService: GameStateService,
+    private confirmDialog: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -119,8 +122,16 @@ export class FindLiturgicalItemGameComponent implements OnInit, OnDestroy {
     this.gameService.showMiniGameCompletionPopup(passed);
   }
 
-  exitGame(): void {
-    if (confirm('Are you sure you want to exit? Your current progress will be lost.')) {
+  async exitGame(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Exit Game?',
+      message: 'Are you sure you want to exit? Your current progress will be lost.',
+      confirmText: 'Exit',
+      cancelText: 'Stay',
+      type: 'warning'
+    });
+
+    if (confirmed) {
       this.gameService.exitMiniGame();
     }
   }

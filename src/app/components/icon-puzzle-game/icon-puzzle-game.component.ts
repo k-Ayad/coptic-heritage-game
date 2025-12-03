@@ -4,6 +4,8 @@ import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 import { MiniGameResult } from '../../models/minigame-state.model';
 import { IconConfig, ICON_CONFIGS } from '../../models/icon-config.model';
+import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 interface PuzzleTile {
   id: number;
@@ -28,7 +30,7 @@ interface GridCell {
 @Component({
   selector: 'app-icon-puzzle-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule , ConfirmationDialogComponent],
   templateUrl: './icon-puzzle-game.component.html',
   styleUrls: ['./icon-puzzle-game.component.scss']
 })
@@ -64,7 +66,8 @@ export class IconPuzzleGameComponent implements OnInit, OnDestroy {
 
   constructor(
     private gameService: GameService,
-    private gameStateService: GameStateService
+    private gameStateService: GameStateService,
+    private confirmDialog: ConfirmationDialogService
   ) {
     effect(() => {
       if (this.canPlay() && this.tiles().length === 0) {
@@ -446,9 +449,16 @@ export class IconPuzzleGameComponent implements OnInit, OnDestroy {
     };
   }
 
-  exitGame(): void {
-    if (confirm('Are you sure you want to exit? Your current progress will be lost.')) {
-      this.removeGlobalListeners();
+  async exitGame(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Exit Game?',
+      message: 'Are you sure you want to exit? Your current progress will be lost.',
+      confirmText: 'Exit',
+      cancelText: 'Stay',
+      type: 'warning'
+    });
+
+    if (confirmed) {
       this.gameService.exitMiniGame();
     }
   }

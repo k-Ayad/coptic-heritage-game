@@ -1,0 +1,25 @@
+<div class="confirmation-overlay" *ngIf="dialogService.showDialog()" (click)="onCancel()">
+  <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-icon">
+      <span class="icon-emoji">{{ getIconEmoji() }}</span>
+    </div>
+    
+    <h2 class="dialog-title">{{ dialogService.dialogData().title }}</h2>
+    
+    <p class="dialog-message">{{ dialogService.dialogData().message }}</p>
+    
+    <div class="dialog-buttons">
+      <button 
+        *ngIf="dialogService.dialogData().showCancel"
+        class="dialog-btn dialog-btn-cancel" 
+        (click)="onCancel()">
+        {{ dialogService.dialogData().cancelText }}
+      </button>
+      <button 
+        class="dialog-btn dialog-btn-confirm" 
+        (click)="onConfirm()">
+        {{ dialogService.dialogData().confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

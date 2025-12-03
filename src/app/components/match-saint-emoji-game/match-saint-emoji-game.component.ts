@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
 import { SAINT_QUESTIONS, SaintQuestion } from '../../models/saint-questions';
+import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 interface QuestionWithShuffledChoices extends SaintQuestion {
   shuffledChoices: string[];
@@ -11,7 +13,7 @@ interface QuestionWithShuffledChoices extends SaintQuestion {
 @Component({
   selector: 'app-match-saint-emoji-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule , ConfirmationDialogComponent],
   templateUrl: './match-saint-emoji-game.component.html',
   styleUrls: ['./match-saint-emoji-game.component.scss']
 })
@@ -31,7 +33,8 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
 
   constructor(
     public gameService: GameService,
-    private gameStateService: GameStateService
+    private gameStateService: GameStateService,
+    private confirmDialog: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -143,8 +146,16 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
     this.gameService.exitMiniGame();
   }
 
-  exitGame(): void {
-    if (confirm('Are you sure you want to exit? Your current progress will be lost.')) {
+  async exitGame(): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Exit Game?',
+      message: 'Are you sure you want to exit? Your current progress will be lost.',
+      confirmText: 'Exit',
+      cancelText: 'Stay',
+      type: 'warning'
+    });
+
+    if (confirmed) {
       this.gameService.exitMiniGame();
     }
   }
