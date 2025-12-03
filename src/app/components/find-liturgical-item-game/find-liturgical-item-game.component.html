@@ -1,0 +1,78 @@
+<div class="find-liturgical-game" *ngIf="canPlay()">
+  <!-- Exit Button -->
+  <button class="exit-button" (click)="exitGame()">
+    <span class="exit-icon">✕</span>
+    <span class="exit-text">Exit</span>
+  </button>
+
+  <!-- Header -->
+  <div class="game-header">
+    <h1 class="game-title">
+      <span class="cross-icon">✝</span>
+      Find the Liturgical Item
+    </h1>
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">Item {{ currentItemIndex() + 1 }} of {{ shuffledItems().length }}</span>
+    </div>
+    <div class="score-display">
+      <span class="score-label">Correct:</span>
+      <span class="score-value">{{ correctAnswers() }} / {{ shuffledItems().length }}</span>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div class="game-area" *ngIf="shuffledItems().length > 0 && !showDescription()">
+    
+    <!-- Instruction -->
+    <div class="instruction-card">
+      <p class="instruction-text">Tap the <strong>{{ getCurrentTargetItem().name }}</strong></p>
+    </div>
+
+    <!-- Altar Table with Items -->
+    <div class="altar-container">
+      <div class="altar-table">
+        <div 
+          *ngFor="let item of allItems"
+          class="liturgical-item"
+          [class.item-selected]="selectedItem() === item.id"
+          [class.item-correct]="selectedItem() === item.id && isCorrect()"
+          [class.item-incorrect]="selectedItem() === item.id && !isCorrect()"
+          [style.left.%]="item.position.x"
+          [style.top.%]="item.position.y"
+          (click)="onItemClick(item.id)">
+          <img [src]="item.asset" [alt]="item.name" class="item-image">
+          <div class="item-glow" *ngIf="selectedItem() === item.id && isCorrect()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hint Message -->
+    <div class="hint-message" *ngIf="selectedItem() && !isCorrect()">
+      <span class="hint-icon">💡</span>
+      <p>Not quite! Try again...</p>
+    </div>
+  </div>
+
+  <!-- Description Popup -->
+  <div class="description-overlay" *ngIf="showDescription()">
+    <div class="description-card">
+      <div class="success-badge">
+        <span class="success-icon">✓</span>
+        <h3>Correct!</h3>
+      </div>
+
+      <div class="item-info">
+        <img [src]="getCurrentTargetItem().asset" [alt]="getCurrentTargetItem().name" class="item-display">
+        <h4>{{ getCurrentTargetItem().name }}</h4>
+        <p class="item-description">{{ getCurrentTargetItem().description }}</p>
+      </div>
+
+      <button class="continue-button" (click)="onContinue()">
+        {{ currentItemIndex() + 1 < shuffledItems().length ? 'Next Item' : 'Finish Game' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,7 @@ import { MatchLetterGameComponent } from '../match-letter-game/match-letter-game
 import { MatchSaintEmojiGameComponent } from '../match-saint-emoji-game/match-saint-emoji-game.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
+import { FindLiturgicalItemGameComponent } from '../find-liturgical-item-game/find-liturgical-item-game.component';
 
 @Component({
   selector: 'app-game',
@@ -25,7 +26,8 @@ import { GameStateService } from '../../services/game-state.service';
     IconPuzzleGameComponent,
     GamePopupComponent,
     MatchLetterGameComponent,
-    MatchSaintEmojiGameComponent
+    MatchSaintEmojiGameComponent,
+    FindLiturgicalItemGameComponent
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']

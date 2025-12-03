@@ -44,5 +44,14 @@ export const MINIGAME_INFO: Record<string, MiniGameInfo> = {
     scoringSystem: 'Answer 6 of 8 questions correctly to pass',
     passingScore: 6,
     totalQuestions: 8
+  },
+  'monastery2': {
+    id: 'monastery2',
+    name: 'Find the Liturgical Item',
+    description: 'Find the Liturgical Item: Tap the correct object used in the Divine Liturgy. Learn each item\'s name and purpose.',
+    instructions: 'Look at the altar table and tap the liturgical item when asked. Learn about each sacred vessel used during the Divine Liturgy.',
+    scoringSystem: 'Identify 4 of 5 liturgical items correctly to pass',
+    passingScore: 4,
+    totalQuestions: 5
   }
 };

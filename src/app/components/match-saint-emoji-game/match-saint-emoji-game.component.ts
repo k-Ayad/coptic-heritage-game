@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
+import { GameStateService } from '../../services/game-state.service';
 import { SAINT_QUESTIONS, SaintQuestion } from '../../models/saint-questions';
 
 interface QuestionWithShuffledChoices extends SaintQuestion {
@@ -18,15 +19,20 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
   canPlay = signal(false);
   currentQuestionIndex = signal(0);
   correctAnswers = signal(0);
+  wrongAnswers = signal(0);
   selectedAnswer = signal<string | null>(null);
   showDescription = signal(false);
   isCorrect = signal(false);
   shuffledQuestions = signal<QuestionWithShuffledChoices[]>([]);
+  showFailPopup = signal(false);
   
   private readonly PLACE_ID = 'hanging-church';
   private readonly PASSING_SCORE = 6; // Need 6 out of 8 correct
 
-  constructor(public gameService: GameService) {}
+  constructor(
+    public gameService: GameService,
+    private gameStateService: GameStateService
+  ) {}
 
   ngOnInit(): void {
     const miniGameStarted = this.gameService.miniGameStarted();
@@ -58,8 +64,10 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
     this.shuffledQuestions.set(shuffled);
     this.currentQuestionIndex.set(0);
     this.correctAnswers.set(0);
+    this.wrongAnswers.set(0);
     this.selectedAnswer.set(null);
     this.showDescription.set(false);
+    this.showFailPopup.set(false);
   }
 
   getCurrentQuestion(): QuestionWithShuffledChoices {
@@ -78,10 +86,9 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
       this.showDescription.set(true);
     } else {
       this.isCorrect.set(false);
-      // Show hint and allow retry after 1.5 seconds
-      setTimeout(() => {
-        this.selectedAnswer.set(null);
-      }, 1500);
+      this.wrongAnswers.set(this.wrongAnswers() + 1);
+      // Show correct answer and description
+      this.showDescription.set(true);
     }
   }
 
@@ -112,7 +119,28 @@ export class MatchSaintEmojiGameComponent implements OnInit, OnDestroy {
     };
     
     this.gameService.saveMiniGameResult(result);
-    this.gameService.showMiniGameCompletionPopup(passed);
+    
+    // Mark place as completed in GameStateService if passed
+    if (passed) {
+      this.gameStateService.completePlace(this.PLACE_ID);
+    }
+    
+    if (passed) {
+      this.gameService.showMiniGameCompletionPopup(true);
+    } else {
+      // Show fail popup with retry option
+      this.showFailPopup.set(true);
+    }
+  }
+
+  onFailTryAgain(): void {
+    this.showFailPopup.set(false);
+    this.initializeGame();
+  }
+
+  onFailExit(): void {
+    this.showFailPopup.set(false);
+    this.gameService.exitMiniGame();
   }
 
   exitGame(): void {

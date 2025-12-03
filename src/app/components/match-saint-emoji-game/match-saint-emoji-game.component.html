@@ -18,8 +18,14 @@
       <span class="progress-text">Question {{ currentQuestionIndex() + 1 }} of {{ shuffledQuestions().length }}</span>
     </div>
     <div class="score-display">
-      <span class="score-label">Correct:</span>
-      <span class="score-value">{{ correctAnswers() }} / {{ shuffledQuestions().length }}</span>
+      <span class="score-item correct">
+        <span class="score-icon">✓</span>
+        <span class="score-value">{{ correctAnswers() }}</span>
+      </span>
+      <span class="score-item wrong">
+        <span class="score-icon">✗</span>
+        <span class="score-value">{{ wrongAnswers() }}</span>
+      </span>
     </div>
   </div>
 
@@ -44,19 +50,19 @@
         (click)="onAnswerSelect(choice)">
         {{ choice }}
       </button>
-      
-      <!-- Incorrect Hint -->
-      <div class="hint-message" *ngIf="selectedAnswer() && !isCorrect()">
-        <span class="hint-icon">💡</span>
-        <p>Not quite! Try again...</p>
-      </div>
     </div>
 
-    <!-- Saint Description -->
+    <!-- Saint Description (shown for both correct and incorrect) -->
     <div class="description-container" *ngIf="showDescription()">
-      <div class="success-badge">
+      <div class="success-badge" *ngIf="isCorrect()">
         <span class="success-icon">✓</span>
         <h3>Correct!</h3>
+      </div>
+
+      <div class="failure-badge" *ngIf="!isCorrect()">
+        <span class="failure-icon">✗</span>
+        <h3>Wrong Answer</h3>
+        <p class="correct-answer-text">Correct answer: <strong>{{ getCurrentQuestion().correct }}</strong></p>
       </div>
       
       <div class="saint-info">
@@ -67,6 +73,22 @@
       <button class="continue-button" (click)="onContinue()">
         {{ currentQuestionIndex() + 1 < shuffledQuestions().length ? 'Continue' : 'Finish Game' }}
       </button>
+    </div>
+  </div>
+
+  <!-- Fail Popup -->
+  <div *ngIf="showFailPopup()" class="popup-overlay">
+    <div class="popup-content">
+      <h2>😢 Hard Luck!</h2>
+      <div class="popup-body">
+        <p>You answered <strong>{{ correctAnswers() }}</strong> out of <strong>{{ shuffledQuestions().length }}</strong> questions correctly.</p>
+        <p>You need at least <strong>6 correct answers</strong> to pass.</p>
+        <p>Would you like to try again or return to the map?</p>
+      </div>
+      <div class="popup-buttons">
+        <button class="popup-btn popup-btn-secondary" (click)="onFailExit()">Back to Map</button>
+        <button class="popup-btn popup-btn-primary" (click)="onFailTryAgain()">Try Again</button>
+      </div>
     </div>
   </div>
 </div>

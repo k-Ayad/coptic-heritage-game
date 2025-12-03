@@ -9,11 +9,14 @@
     <app-icon-puzzle-game *ngIf="currentMiniGame() === 'school1'"></app-icon-puzzle-game>
     
 
-    <!-- Match Letter Game (St. Anthony's Monastery) - NEW -->
+    <!-- Match Letter Game (St. Anthony's Monastery) -->
     <app-match-letter-game *ngIf="currentMiniGame() === 'monastery1'"></app-match-letter-game>
 
-    <!-- Match Saint Emoji Game (Hanging Church) - NEW -->
+    <!-- Match Saint Emoji Game (Hanging Church) -->
     <app-match-saint-emoji-game *ngIf="currentMiniGame() === 'hanging-church'"></app-match-saint-emoji-game>
+
+    <!-- Find Liturgical Item Game (St. Bishoy Monastery) -->
+    <app-find-liturgical-item-game *ngIf="currentMiniGame() === 'monastery2'"></app-find-liturgical-item-game>
 
     <!-- Game Popup (shared) -->
     <app-game-popup></app-game-popup>

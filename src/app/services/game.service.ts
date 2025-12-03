@@ -211,7 +211,7 @@ export class GameService {
   }
 
   hasMiniGame(placeId: string): boolean {
-    return placeId === 'church1' || placeId === 'school1' || placeId === 'monastery1' || placeId === 'hanging-church';
+    return placeId === 'church1' || placeId === 'school1' || placeId === 'monastery1' || placeId === 'hanging-church' || placeId === 'monastery2';
   }
 
   getMiniGameResult(placeId: string): MiniGameResult | undefined {

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
+import { GameStateService } from '../../services/game-state.service';
 import { COPTIC_LETTERS, CopticLetter } from '../../models/coptic-letters';
 
 interface Card {
@@ -29,18 +30,19 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
   totalPairs = signal(0);
   canPlay = signal(false);
   
-  // Timer properties
-  timeRemaining = signal(180); // 3 minutes = 180 seconds
+  timeRemaining = signal(180);
   showTimeoutPopup = signal(false);
   private timerInterval: any = null;
   
   private selectedLetters: CopticLetter[] = [];
   private readonly PLACE_ID = 'monastery1';
 
-  constructor(public gameService: GameService) {}
+  constructor(
+    public gameService: GameService,
+    private gameStateService: GameStateService
+  ) {}
 
   ngOnInit(): void {
-    // Check if popup should be shown
     const miniGameStarted = this.gameService.miniGameStarted();
     if (!miniGameStarted) {
       this.gameService.showMiniGameEntryPopup(this.PLACE_ID);
@@ -50,7 +52,6 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
       this.startTimer();
     }
 
-    // Subscribe to mini-game started state
     const checkStarted = setInterval(() => {
       if (this.gameService.miniGameStarted()) {
         this.canPlay.set(true);
@@ -66,7 +67,7 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
   }
 
   private startTimer(): void {
-    this.stopTimer(); // Clear any existing timer
+    this.stopTimer();
     
     this.timerInterval = setInterval(() => {
       const currentTime = this.timeRemaining();
@@ -114,15 +115,12 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
   }
 
   initializeGame(): void {
-    // Shuffle all letters and select 8 random ones
     this.selectedLetters = this.shuffleArray([...COPTIC_LETTERS]).slice(0, 8);
     this.totalPairs.set(this.selectedLetters.length);
     
-    // Create cards
     const cardArray: Card[] = [];
     
     this.selectedLetters.forEach(letter => {
-      // Letter card with SVG
       cardArray.push({
         id: `letter-${letter.id}`,
         type: 'letter',
@@ -133,7 +131,6 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
         isMatched: false
       });
       
-      // Name + pronunciation card
       cardArray.push({
         id: `name-${letter.id}`,
         type: 'name',
@@ -145,22 +142,18 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
       });
     });
     
-    // Shuffle cards
     this.cards.set(this.shuffleArray(cardArray));
   }
 
   onCardClick(card: Card): void {
-    // Prevent interactions if checking or card already flipped/matched
     if (this.isChecking() || card.isFlipped || card.isMatched) {
       return;
     }
     
-    // Prevent flipping more than 2 cards
     if (this.flippedCards().length >= 2) {
       return;
     }
     
-    // Flip the card
     const updatedCards = this.cards().map(c => 
       c.id === card.id ? { ...c, isFlipped: true } : c
     );
@@ -169,7 +162,6 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
     const newFlipped = [...this.flippedCards(), card];
     this.flippedCards.set(newFlipped);
     
-    // Check if two cards are flipped
     if (newFlipped.length === 2) {
       this.checkMatch();
     }
@@ -179,9 +171,7 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
     this.isChecking.set(true);
     const [card1, card2] = this.flippedCards();
     
-    // Check if cards match (same letterId)
     if (card1.letterId === card2.letterId) {
-      // Match found! Keep cards flipped AND mark as matched
       setTimeout(() => {
         const updatedCards = this.cards().map(c => 
           c.id === card1.id || c.id === card2.id 
@@ -193,14 +183,12 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
         this.flippedCards.set([]);
         this.isChecking.set(false);
         
-        // Check if game completed
         if (this.matchedPairs() === this.totalPairs()) {
           this.stopTimer();
           setTimeout(() => this.completeGame(), 500);
         }
       }, 600);
     } else {
-      // No match - flip back
       setTimeout(() => {
         const updatedCards = this.cards().map(c => 
           c.id === card1.id || c.id === card2.id 
@@ -215,7 +203,7 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
   }
 
   private completeGame(): void {
-    const result : any = {
+    const result:any = {
       placeId: this.PLACE_ID,
       timestamp: new Date(),
       score: this.totalPairs(),
@@ -224,6 +212,7 @@ export class MatchLetterGameComponent implements OnInit, OnDestroy {
     };
     
     this.gameService.saveMiniGameResult(result);
+    this.gameStateService.completePlace(this.PLACE_ID);
     this.gameService.showMiniGameCompletionPopup(true);
   }
 
