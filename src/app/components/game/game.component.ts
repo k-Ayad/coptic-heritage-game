@@ -9,6 +9,7 @@ import { IconPuzzleGameComponent } from '../icon-puzzle-game/icon-puzzle-game.co
 import { GamePopupComponent } from '../game-popup/game-popup.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
+import { WriteItGameComponent } from '../write-it-game/write-it-game.component';
 
 @Component({
   selector: 'app-game',
@@ -21,7 +22,8 @@ import { GameStateService } from '../../services/game-state.service';
     MenuComponent, 
     HymnsGameComponent,
     IconPuzzleGameComponent,
-    GamePopupComponent
+    GamePopupComponent,
+    WriteItGameComponent
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']

@@ -1,0 +1,131 @@
+<div class="write-it-container">
+  
+  <!-- Exit Button -->
+  <button class="exit-button" (click)="exitGame()" *ngIf="canPlay() && gameState() === 'playing'">
+    <span class="exit-icon">✕</span>
+    <span class="exit-text">Exit</span>
+  </button>
+  
+  <!-- Playing State -->
+  <div class="game-content" *ngIf="gameState() === 'playing' && canPlay()">
+    
+    <!-- Header -->
+    <div class="game-header">
+      <h1 class="game-title">
+        <span class="title-icon">✍️</span>
+        Write It!
+      </h1>
+      <p class="game-subtitle">Trace the Coptic Letter</p>
+      <div class="progress-info">
+        <p class="progress-text">{{ progressText() }}</p>
+        <p class="attempts-text">Failed Attempts: {{ failedAttempts() }}/{{ MAX_FAILED_ATTEMPTS }}</p>
+      </div>
+    </div>
+
+    <!-- Current Letter Display -->
+    <div class="current-letter-section">
+      <div class="letter-card-large">
+        <div class="letter-symbol">{{ currentLetter().letter }}</div>
+        <div class="letter-name">{{ currentLetter().name }}</div>
+        <div class="letter-pronunciation">[{{ currentLetter().pronunciation }}]</div>
+      </div>
+    </div>
+
+    <!-- Letter Selection Cards -->
+    <div class="letter-cards-container">
+      <div class="letter-cards-scroll">
+        <div *ngFor="let letter of getLetterCards(); let i = index"
+             class="letter-card"
+             [class.current]="isCurrentLetter(letter, i)"
+             [class.completed]="isCompletedLetter(i)"
+             (click)="onLetterCardClick(letter)">
+          <div class="card-letter">{{ letter.letter }}</div>
+          <div class="card-status" *ngIf="isCompletedLetter(i)">✓</div>
+        </div>
+      </div>
+      <p class="instruction-text">Tap the highlighted letter to see its outline</p>
+    </div>
+
+    <!-- Drawing Canvas Section -->
+    <div class="canvas-section">
+      
+      <!-- Letter Outline Overlay -->
+      <div class="letter-outline-overlay" *ngIf="showLetterOutline()">
+        <div class="outline-content" [innerHTML]="currentOutlineSvg()"></div>
+        <p class="outline-hint">Memorize this letter! (5 seconds)</p>
+      </div>
+      
+      <!-- Drawing Canvas -->
+      <canvas #drawingCanvas
+              class="drawing-canvas"
+              (pointerdown)="onPointerDown($event)"
+              (pointermove)="onPointerMove($event)"
+              (pointerup)="onPointerUp()"
+              (pointercancel)="onPointerUp()">
+      </canvas>
+      
+      <p class="canvas-hint">Draw the letter with your finger or mouse</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="action-btn clear-btn" (click)="clearCanvas()">
+        <span class="btn-icon">🗑️</span>
+        Clear
+      </button>
+      <button class="action-btn complete-btn" 
+              (click)="onComplete()"
+              [disabled]="!hasDrawn()">
+        <span class="btn-icon">✓</span>
+        Complete
+      </button>
+    </div>
+
+    <!-- Current Word Progress -->
+    <div class="word-progress">
+      <h3 class="word-title">{{ currentWord().word }}</h3>
+      <p class="word-meaning">{{ currentWord().meaning }}</p>
+      <div class="word-letters">
+        <span *ngFor="let letter of currentWord().letters; let i = index"
+              class="word-letter"
+              [class.completed]="isCompletedLetter(i)"
+              [class.current]="isCurrentLetter(letter, i)">
+          {{ letter.letter }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Word Completion Popup -->
+  <div class="word-popup-overlay" *ngIf="showWordCompletionPopup()">
+    <div class="word-popup-content">
+      <div class="word-popup-card">
+        
+        <div class="success-icon">🎉</div>
+        
+        <h2 class="popup-title">Word Completed!</h2>
+        
+        <div class="completed-word-display">
+          <div class="word-text">{{ completedWordData()?.word }}</div>
+          <div class="word-translation">{{ completedWordData()?.meaning }}</div>
+        </div>
+        
+        <div class="word-letters-display">
+          <div *ngFor="let letter of completedWordData()?.letters"
+               class="letter-item">
+            <span class="letter-char">{{ letter.letter }}</span>
+            <span class="letter-info">{{ letter.name }} [{{ letter.pronunciation }}]</span>
+          </div>
+        </div>
+        
+        <button class="popup-btn continue-btn" (click)="closeWordCompletionPopup()">
+          <span class="btn-icon">➡️</span>
+          {{ currentWordIndex() + 1 >= COPTIC_WORDS.length ? 'Finish' : 'Next Word' }}
+        </button>
+        
+      </div>
+    </div>
+  </div>
+
+</div>

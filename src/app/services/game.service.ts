@@ -12,6 +12,7 @@ export class GameService {
   private readonly MAP_WIDTH = 2000;
   private readonly MAP_HEIGHT = 1500;
   private readonly MINIGAME_STORAGE_KEY = 'coptic_game_minigames';
+  private readonly ICON_PUZZLE_STORAGE_KEY = 'icon_puzzle_completed';
 
   character = signal<Character>({
     x: 200,
@@ -90,23 +91,18 @@ export class GameService {
   ];
 
   constructor() {
-    // Handle page refresh while in mini-game
     this.handleRefresh();
   }
 
   private handleRefresh(): void {
     const state = this.miniGameState();
     
-    // If we were in a mini-game when page refreshed
     if (state.currentGame) {
-      // Find the place
       const place = this.places.find(p => p.id === state.currentGame);
       
       if (place) {
-        // Set active place
         this.activePlace.set(place);
         
-        // Show entry popup again
         setTimeout(() => {
           this.showMiniGameEntryPopup(state.currentGame!);
         }, 100);
@@ -215,7 +211,8 @@ export class GameService {
   }
 
   hasMiniGame(placeId: string): boolean {
-    return placeId === 'church1' || placeId === 'school1';
+    // Added monastery1 to the list of places with mini-games
+    return placeId === 'church1' || placeId === 'school1' || placeId === 'monastery1';
   }
 
   getMiniGameResult(placeId: string): MiniGameResult | undefined {
@@ -275,11 +272,15 @@ export class GameService {
     this.miniGameState.set(freshState);
     this.saveMiniGameState();
     
-    // Also clear icon puzzle progress
+    this.resetIconPuzzleProgress();
+  }
+
+  private resetIconPuzzleProgress(): void {
     try {
-      localStorage.removeItem('icon_puzzle_completed');
+      localStorage.removeItem(this.ICON_PUZZLE_STORAGE_KEY);
+      console.log('Icon Puzzle progress completely reset');
     } catch (error) {
-      console.error('Failed to clear icon puzzle progress:', error);
+      console.error('Failed to reset icon puzzle progress:', error);
     }
   }
 
