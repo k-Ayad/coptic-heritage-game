@@ -7,8 +7,9 @@
     
     <!-- Icon Puzzle Game (Catechetical School) -->
     <app-icon-puzzle-game *ngIf="currentMiniGame() === 'school1'"></app-icon-puzzle-game>
-    
-  <app-write-it-game *ngIf="currentMiniGame() === 'monastery1'"></app-write-it-game>
+
+    <!-- Match Letter Game (St. Anthony's Monastery) - NEW -->
+    <app-match-letter-game *ngIf="currentMiniGame() === 'monastery1'"></app-match-letter-game>
 
     <!-- Game Popup (shared) -->
     <app-game-popup></app-game-popup>

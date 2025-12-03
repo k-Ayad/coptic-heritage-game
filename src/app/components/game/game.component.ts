@@ -9,7 +9,7 @@ import { IconPuzzleGameComponent } from '../icon-puzzle-game/icon-puzzle-game.co
 import { GamePopupComponent } from '../game-popup/game-popup.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
-import { WriteItGameComponent } from '../write-it-game/write-it-game.component';
+import { MatchLetterGameComponent } from '../match-letter-game/match-letter-game.component';
 
 @Component({
   selector: 'app-game',
@@ -23,7 +23,7 @@ import { WriteItGameComponent } from '../write-it-game/write-it-game.component';
     HymnsGameComponent,
     IconPuzzleGameComponent,
     GamePopupComponent,
-    WriteItGameComponent
+    MatchLetterGameComponent
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']

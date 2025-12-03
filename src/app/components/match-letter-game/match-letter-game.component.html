@@ -1,0 +1,70 @@
+<div class="match-letter-game" *ngIf="canPlay()">
+  <!-- Exit Button -->
+  <button class="exit-button" (click)="exitGame()">
+    <span class="exit-icon">✕</span>
+    <span class="exit-text">Exit</span>
+  </button>
+
+  <!-- Header -->
+  <div class="game-header">
+    <h1 class="game-title">
+      <span class="cross-icon">✝</span>
+      Match the Letter
+    </h1>
+    <div class="progress-info">
+      <span class="progress-text">{{ matchedPairs() }} / {{ totalPairs() }} Pairs Matched</span>
+      <span class="timer" [class.timer-warning]="timeRemaining() <= 30">
+        ⏱️ {{ getFormattedTime() }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="cards-grid">
+    <div 
+      *ngFor="let card of cards()"
+      class="card-container"
+      (click)="onCardClick(card)">
+      <div 
+        class="card"
+        [class.flipped]="card.isFlipped || card.isMatched"
+        [class.matched]="card.isMatched">
+        
+        <!-- Matched Check Mark -->
+        <div class="match-indicator" *ngIf="card.isMatched">✓</div>
+        
+        <!-- Card Back -->
+        <div class="card-face card-back">
+          <div class="card-pattern">?</div>
+        </div>
+        
+        <!-- Card Front -->
+        <div class="card-face card-front">
+          <div *ngIf="card.type === 'letter'" class="letter-content">
+            <img [src]="card.svgPath" [alt]="card.content" class="letter-svg">
+          </div>
+          <div *ngIf="card.type === 'name'" class="name-content">
+            <div class="letter-name">{{ card.content }}</div>
+            <div class="pronunciation">{{ card.pronunciation }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeout Popup -->
+  <div *ngIf="showTimeoutPopup()" class="popup-overlay">
+    <div class="popup-content">
+      <h2>⏰ Time's Up!</h2>
+      <div class="popup-body">
+        <p>You've run out of time for this game.</p>
+        <p>You matched <strong>{{ matchedPairs() }} out of {{ totalPairs() }}</strong> pairs.</p>
+        <p>Would you like to try again or exit?</p>
+      </div>
+      <div class="popup-buttons">
+        <button class="popup-btn popup-btn-secondary" (click)="onTimeoutExit()">Exit Game</button>
+        <button class="popup-btn popup-btn-primary" (click)="onTimeoutTryAgain()">Try Again</button>
+      </div>
+    </div>
+  </div>
+</div>
