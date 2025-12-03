@@ -1,0 +1,72 @@
+<div class="match-saint-game" *ngIf="canPlay()">
+  <!-- Exit Button -->
+  <button class="exit-button" (click)="exitGame()">
+    <span class="exit-icon">✕</span>
+    <span class="exit-text">Exit</span>
+  </button>
+
+  <!-- Header -->
+  <div class="game-header">
+    <h1 class="game-title">
+      <span class="cross-icon">✝</span>
+      Match the Saint
+    </h1>
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+      <span class="progress-text">Question {{ currentQuestionIndex() + 1 }} of {{ shuffledQuestions().length }}</span>
+    </div>
+    <div class="score-display">
+      <span class="score-label">Correct:</span>
+      <span class="score-value">{{ correctAnswers() }} / {{ shuffledQuestions().length }}</span>
+    </div>
+  </div>
+
+  <!-- Question Area -->
+  <div class="question-area" *ngIf="shuffledQuestions().length > 0">
+    
+    <!-- Emoji Display -->
+    <div class="emoji-container" [class.emoji-correct]="isCorrect() && showDescription()">
+      <div class="emoji-display">{{ getCurrentQuestion().emoji }}</div>
+      <p class="emoji-hint">Who is this saint?</p>
+    </div>
+
+    <!-- Answer Choices -->
+    <div class="choices-container" *ngIf="!showDescription()">
+      <button 
+        *ngFor="let choice of getCurrentQuestion().shuffledChoices"
+        class="choice-button"
+        [class.choice-selected]="selectedAnswer() === choice"
+        [class.choice-correct]="selectedAnswer() === choice && isCorrect()"
+        [class.choice-incorrect]="selectedAnswer() === choice && !isCorrect()"
+        [disabled]="selectedAnswer() !== null"
+        (click)="onAnswerSelect(choice)">
+        {{ choice }}
+      </button>
+      
+      <!-- Incorrect Hint -->
+      <div class="hint-message" *ngIf="selectedAnswer() && !isCorrect()">
+        <span class="hint-icon">💡</span>
+        <p>Not quite! Try again...</p>
+      </div>
+    </div>
+
+    <!-- Saint Description -->
+    <div class="description-container" *ngIf="showDescription()">
+      <div class="success-badge">
+        <span class="success-icon">✓</span>
+        <h3>Correct!</h3>
+      </div>
+      
+      <div class="saint-info">
+        <h4>{{ getCurrentQuestion().correct }}</h4>
+        <p class="saint-description">{{ getCurrentQuestion().description }}</p>
+      </div>
+
+      <button class="continue-button" (click)="onContinue()">
+        {{ currentQuestionIndex() + 1 < shuffledQuestions().length ? 'Continue' : 'Finish Game' }}
+      </button>
+    </div>
+  </div>
+</div>

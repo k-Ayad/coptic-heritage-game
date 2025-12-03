@@ -69,7 +69,7 @@ export class GameService {
       type: 'school'
     },
     {
-      id: 'church2',
+      id: 'hanging-church',
       name: 'Hanging Church',
       description: 'Experience the beauty of one of Cairo\'s oldest churches',
       x: 1300,
@@ -211,8 +211,7 @@ export class GameService {
   }
 
   hasMiniGame(placeId: string): boolean {
-    // Added monastery1 to the list of places with mini-games
-    return placeId === 'church1' || placeId === 'school1' || placeId === 'monastery1';
+    return placeId === 'church1' || placeId === 'school1' || placeId === 'monastery1' || placeId === 'hanging-church';
   }
 
   getMiniGameResult(placeId: string): MiniGameResult | undefined {

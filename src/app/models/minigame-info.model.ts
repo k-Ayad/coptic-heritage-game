@@ -35,5 +35,14 @@ export const MINIGAME_INFO: Record<string, MiniGameInfo> = {
     scoringSystem: 'Match all 8 pairs of letters to pass',
     passingScore: 8,
     totalQuestions: 8
+  },
+  'hanging-church': {
+    id: 'hanging-church',
+    name: 'Match the Saint by Emoji',
+    description: 'Match the Coptic saint using only emoji clues. Choose the correct saint to learn their story from the Synaxarium.',
+    instructions: 'Look at the emoji clue and select the correct saint from three choices. Each correct answer reveals the saint\'s story from the Synaxarium.',
+    scoringSystem: 'Answer 6 of 8 questions correctly to pass',
+    passingScore: 6,
+    totalQuestions: 8
   }
 };

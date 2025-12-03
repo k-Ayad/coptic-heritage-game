@@ -7,9 +7,10 @@ import { MenuComponent } from '../menu/menu.component';
 import { HymnsGameComponent } from '../hymns-game/hymns-game.component';
 import { IconPuzzleGameComponent } from '../icon-puzzle-game/icon-puzzle-game.component';
 import { GamePopupComponent } from '../game-popup/game-popup.component';
+import { MatchLetterGameComponent } from '../match-letter-game/match-letter-game.component';
+import { MatchSaintEmojiGameComponent } from '../match-saint-emoji-game/match-saint-emoji-game.component';
 import { GameService } from '../../services/game.service';
 import { GameStateService } from '../../services/game-state.service';
-import { MatchLetterGameComponent } from '../match-letter-game/match-letter-game.component';
 
 @Component({
   selector: 'app-game',
@@ -23,7 +24,8 @@ import { MatchLetterGameComponent } from '../match-letter-game/match-letter-game
     HymnsGameComponent,
     IconPuzzleGameComponent,
     GamePopupComponent,
-    MatchLetterGameComponent
+    MatchLetterGameComponent,
+    MatchSaintEmojiGameComponent
   ],
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
